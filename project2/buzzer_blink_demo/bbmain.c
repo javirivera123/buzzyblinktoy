@@ -11,7 +11,6 @@ void main(void) {
         switch_setup();
         buzzer_setup();
 
-        enableWDTInterrupts();
         or_sr(0x18);  // CPU off, GIE on
 
     }
