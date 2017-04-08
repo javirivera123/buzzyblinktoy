@@ -2,27 +2,34 @@
 COMMON_OBJECTS  = 
 CPU             = msp430g2553
 CFLAGS          = -mmcu=${CPU} -I../h 
-LDFLAGS = ../lib/libTimer.a -L/opt/ti/msp430_gcc/include
+LDFLAGS = ../lib/libTimer.a
 
 #switch the compiler (for the internal make rules)
 CC              = msp430-elf-gcc
 AS              = msp430-elf-as
 
-all: buzzerBlink.elf 
+all: button.elf buttonS.elf
 
 #additional rules for files
-buzzerBlink.elf: ${COMMON_OBJECTS} bbmain.o led.o buzzer.o wdInterruptHandler.o ../lib/libTimer.a
-	${CC} $(CFLAGS) $^ $(LDFLAGS) -o $@ 
+button.elf: ${COMMON_OBJECTS} wdInterruptHandler.o ports_interrupt_handler.o  led.o switches.o buzzer.o bbmain.o ../lib/libTimer.a
+	${CC} ${CFLAGS} $^ $(LDFLAGS) -o $@
 
-load: buzzerBlink.elf
+buttonS.elf: ${COMMON_OBJECTS} wdInterruptHandler.o ports_interrupt_handler.o  led.o switches.o buzzer.o bbmain.o ../lib/libTimer.a
+	${CC} ${CFLAGS} $^ $(LDFLAGS) -o $@
+
+load: button.elf
+	mspdebug rf2500 "prog $^"
+
+loadS: buttonS.elf
 	mspdebug rf2500 "prog $^"
 
 clean:
 	rm -f *.o *.elf
 
 
-bbmain.o: buzzer.h led.h
-led.o: led.h
+bbmain.o: led.h switches.h buzzer.h
+led.o: led.h switches.h led.s led.c
+switches.c: switches.h
 buzzer.c: buzzer.h
-wdInterruptHandler.o: buzzer.h led.h
+wdInterruptHandler.o: buzzer.h
 

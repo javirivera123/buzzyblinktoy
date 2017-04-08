@@ -3,18 +3,19 @@
 #include "buzzer.h"		/* for setPeriod */
 #include "led.h"		/* for led_control() */
 
-int 
-main() 
-{
-    configureClocks();		/* setup master oscillator, CPU & peripheral clocks */
-    buzzer_init();
- 
-    led_init();
+void main(void) {
 
-    enableWDTInterrupts();	/* enable wd timer */
+        configureClocks();//disable watchdog timer avoid error
 
-    or_sr(0x18);		/* CPU off, GIE on */
-}
+        led_setup();
+        switch_setup();
+        buzzer_setup();
+
+        enableWDTInterrupts();
+        or_sr(0x18);  // CPU off, GIE on
+
+    }
+
 
 
 
